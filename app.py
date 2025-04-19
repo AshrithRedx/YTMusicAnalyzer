@@ -1,31 +1,18 @@
-from flask import Flask, request, jsonify, send_file
-from fetch_playlist import get_playlist_data
+from flask import Flask, request, jsonify
 from flask_cors import CORS
-app = Flask(__name__)
-CORS(app, origins=["https://yt-music-analyzer.vercel.app"])
-
 
 app = Flask(__name__)
+
+# Allow *all* origins temporarily (you can restrict it later)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 @app.route("/analyze", methods=["GET"])
 def analyze_playlist():
     playlist_id = request.args.get("playlist_id")
     if not playlist_id:
-        return jsonify({"error": "Missing playlist_id"}), 400
-
+        return jsonify({"error": "Missing playlist ID"}), 400
     try:
         data = get_playlist_data(playlist_id)
         return jsonify(data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-@app.route("/plot", methods=["GET"])
-def download_plot():
-    return send_file("artist_frequency.png", mimetype="image/png")
-
-import os
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
-
