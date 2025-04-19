@@ -19,5 +19,9 @@ def analyze_playlist():
 def download_plot():
     return send_file("artist_frequency.png", mimetype="image/png")
 
+import os
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
+
